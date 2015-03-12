@@ -10,32 +10,44 @@ masterPage.config(['$routeProvider', function($routeProvider) {
 }]);
 
 masterPage.controller('MasterPageCtrl', ['$http', function($http) {
-
+  var self = this;
   this.rawBlocks = [];
 
   $http.get('/blockExplorer/q/latesthash').then(function(response) {
-    this.getBlocks(10, response.data);
-  }.bind(this));
+    self.getBlocks(response.data, 10);
+  });
 
-  this.getBlocks = function(maxBlocks, fromHash) {
-    this.chainGetBlock(this.getBlock(fromHash, maxBlocks));
+ /* Returns 'maxBlocks' previous blocks from the given 'hash'. */
+  this.getBlocks = function(hash, maxBlocks) {
+    return new Promise(function(resolve, reject) {
+      self.chainGetBlock(self.getBlock(hash), maxBlocks, function () {
+        console.log('SUCESS!');
+      });
+    });
+
+
   }
 
-  this.chainGetBlock = function(previousGet, maxBlocks) {
-
+  /* Recursively chains block requests until 'maxBlocks' is reached. */
+  this.chainGetBlock = function(previousGet, maxBlocks, success) {
     if (this.rawBlocks.length === maxBlocks) {
+      success();
       return;
     }
 
-    previousGet.then(this.onBlockResponse.bind(this));
+    previousGet.then(this.onBlockResponse(maxBlocks, success).bind(this));
   };
 
-  this.onBlockResponse = function(response) {
-    var rawBlock = response.data;
-    this.rawBlocks.push(rawBlock);
-    this.chainGetBlock(this.getBlock(rawBlock['prev_block']));
+  /* Returns a function compatible with a promise success. */
+  this.onBlockResponse = function(maxBlocks, success) {
+    return function(response) {
+      var rawBlock = response.data;
+      this.rawBlocks.push(rawBlock);
+      this.chainGetBlock(this.getBlock(rawBlock['prev_block']), maxBlocks, success);
+    };
   }
 
+  /* Returns a promise for a response with the given hash. */
   this.getBlock = function(hash) {
     return $http.get('/blockExplorer/rawblock/' + hash);
   }
