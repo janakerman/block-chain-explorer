@@ -12,6 +12,9 @@
       return new Promise(function(resolve, reject) {
         $http.get('/blockExplorer/q/latesthash').then(function (response) {
           resolve(response.data);
+        },
+        function(error) {
+          reject();
         })
       });
     }
@@ -22,23 +25,32 @@
       var blocksArray = [];
 
       /* Recursively chains block requests until 'maxBlocks' is reached. */
-      var chainGetBlock = function(previousGet, success) {
+      var chainGetBlock = function(previousGet, success, error) {
         if (blocksArray.length === maxBlocks) {
           success(blocksArray);
           return;
         }
 
-        previousGet.then(function(block) {
-          var rawBlock = block;
-          blocksArray.push(rawBlock);
-          chainGetBlock(blockService.getBlock(rawBlock['prev_block']), success);
-        }.bind(this));
+        previousGet.then(
+          function(block) {
+            var rawBlock = block;
+            blocksArray.push(rawBlock);
+            chainGetBlock(blockService.getBlock(rawBlock['prev_block']), success);
+          }.bind(this)
+          ,
+          error
+        );
       };
 
       return new Promise(function(resolve, reject) {
-        chainGetBlock(blockService.getBlock(hash), function (blockArray) {
-          resolve(blockArray);
-        });
+        chainGetBlock(blockService.getBlock(hash),
+          function (blockArray) {
+            resolve(blockArray);
+          },
+          function (error) {
+            reject();
+          }
+        );
       });
     }
 
@@ -47,6 +59,9 @@
       return new Promise (function (resolve, reject) {
         $http.get('/blockExplorer/rawblock/' + hash).then(function(response) {
           resolve(response.data)
+        },
+        function(error) {
+          reject();
         });
       });
     }

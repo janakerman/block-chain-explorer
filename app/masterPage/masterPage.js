@@ -10,21 +10,42 @@
     });
   }]);
 
-  masterPage.controller('MasterPageCtrl', ['$http', 'BlockService', function($http, BlockService) {
+  masterPage.controller('MasterPageCtrl', ['$http', '$scope', 'BlockService', function($http, $scope, BlockService) {
     var self = this;
 
-    self.oldestBlock = '';
+    var retryError = 'Error! Could not load blocks.';
 
-    BlockService.getLatestHash().then(function(latestHash) {
-      self.previousTenBlocks(latestHash);
-    });
+    self.oldestBlock = '';
+    self.errorMessage = '';
+
+    this.previousTenFromLatest = function () {
+      BlockService.getLatestHash().then(
+        function(latestHash) {
+          self.errorMessage = '';
+
+          self.previousTenBlocks(latestHash);
+        },
+        function(error) {
+          self.errorMessage = retryError;
+          $scope.$apply();
+
+        });
+    }
 
     this.previousTenBlocks = function (hash) {
-      BlockService.getBlocks(hash, 10).then(function(blocksArray) {
-        self.rawBlocks = blocksArray;
+      BlockService.getBlocks(hash, 10).then(
+        function(blocksArray) {
+          self.errorMessage = '';
 
-        self.oldestBlock = self.rawBlocks[self.rawBlocks.length-1].hash;
-      });
+          self.rawBlocks = blocksArray;
+
+          self.oldestBlock = self.rawBlocks[self.rawBlocks.length-1].hash;
+        },
+        function(error) {
+          self.errorMessage = retryError;
+          $scope.$apply();
+        });
+
     }
 
     this.previousTen = function () {
@@ -34,6 +55,8 @@
     this.convertHexToDecimal = function(hex) {
       return parseInt(hex, 16);
     }
+
+    this.previousTenFromLatest();
 
   }]);
 
