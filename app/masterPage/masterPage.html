@@ -16,7 +16,7 @@
     </div>
   </div>
 </nav>
-<div class="container">
+<div class="container" ng-controller="MasterPageCtrl as master">
   <div class="row">
     <div class="col-md-1 col-md-offset-1 side-bar">
       <button type="button" class="btn btn-default previous-button"> <- 10</button>
@@ -24,16 +24,9 @@
     <div class="col-md-8">
       <table class="table">
         <tr><th>Number</th><th>Hash</th></tr>
-        <tr><td><a href="blockDetail.html">1</a></td><td><a href="blockDetail.html">32552832...</</a></td></tr>
-        <tr><td><a href="blockDetail.html">2</a></td><td><a href="blockDetail.html">32552832...</</a></td></tr>
-        <tr><td><a href="blockDetail.html">1</a></td><td><a href="blockDetail.html">32552832...</</a></td></tr>
-        <tr><td><a href="blockDetail.html">1</a></td><td><a href="blockDetail.html">32552832...</</a></td></tr>
-        <tr><td><a href="blockDetail.html">1</a></td><td><a href="blockDetail.html">32552832...</</a></td></tr>
-        <tr><td><a href="blockDetail.html">1</a></td><td><a href="blockDetail.html">32552832...</</a></td></tr>
-        <tr><td><a href="blockDetail.html">1</a></td><td><a href="blockDetail.html">32552832...</</a></td></tr>
-        <tr><td><a href="blockDetail.html">1</a></td><td><a href="blockDetail.html">32552832...</</a></td></tr>
-        <tr><td><a href="blockDetail.html">1</a></td><td><a href="blockDetail.html">32552832...</</a></td></tr>
-        <tr><td><a href="blockDetail.html">1</a></td><td><a href="blockDetail.html">32552832...</</a></td></tr>
+        <tr ng-repeat="block in master.rawBlocks track by $index">
+          <td><a href="blockDetail.html">{{ $index + 1 }}</a></td><td><a href="blockDetail.html">{{ block.hash }}</a></td>
+          </tr>
       </table>
   </div>
 </div>
