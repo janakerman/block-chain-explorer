@@ -20,30 +20,28 @@ masterPage.controller('MasterPageCtrl', ['$http', function($http) {
  /* Returns 'maxBlocks' previous blocks from the given 'hash'. */
   this.getBlocks = function(hash, maxBlocks) {
     return new Promise(function(resolve, reject) {
-      self.chainGetBlock(self.getBlock(hash), maxBlocks, function () {
-        console.log('SUCESS!');
+      self.chainGetBlock(self.getBlock(hash), maxBlocks, [], function (blockArray) {
+        self.rawBlocks = blockArray;
       });
     });
-
-
   }
 
   /* Recursively chains block requests until 'maxBlocks' is reached. */
-  this.chainGetBlock = function(previousGet, maxBlocks, success) {
-    if (this.rawBlocks.length === maxBlocks) {
-      success();
+  this.chainGetBlock = function(previousGet, maxBlocks, blocksArray, success) {
+    if (blocksArray.length === maxBlocks) {
+      success(blocksArray);
       return;
     }
 
-    previousGet.then(this.onBlockResponse(maxBlocks, success).bind(this));
+    previousGet.then(this.onBlockResponse(maxBlocks, blocksArray, success).bind(this));
   };
 
   /* Returns a function compatible with a promise success. */
-  this.onBlockResponse = function(maxBlocks, success) {
+  this.onBlockResponse = function(maxBlocks, blocksArray, success) {
     return function(response) {
       var rawBlock = response.data;
-      this.rawBlocks.push(rawBlock);
-      this.chainGetBlock(this.getBlock(rawBlock['prev_block']), maxBlocks, success);
+      blocksArray.push(rawBlock);
+      this.chainGetBlock(this.getBlock(rawBlock['prev_block']), maxBlocks, blocksArray, success);
     };
   }
 
