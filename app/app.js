@@ -11,7 +11,7 @@ angular.module('myApp', [
 config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/block/:blockHash', {
     templateUrl: 'blockDetail/blockDetail.html',
-    controller: 'BlockDetailCtrl',
+    controller: 'BlockDetailPageCtrl',
   }).
   otherwise({redirectTo: '/'});
 }]);

@@ -28,8 +28,8 @@
           return;
         }
 
-        previousGet.then(function(response) {
-          var rawBlock = response.data;
+        previousGet.then(function(block) {
+          var rawBlock = block;
           blocksArray.push(rawBlock);
           chainGetBlock(blockService.getBlock(rawBlock['prev_block']), success);
         }.bind(this));
@@ -46,7 +46,7 @@
     blockService.getBlock = function(hash) {
       return new Promise (function (resolve, reject) {
         $http.get('/blockExplorer/rawblock/' + hash).then(function(response) {
-          resolve(response)
+          resolve(response.data)
         });
       });
     }
