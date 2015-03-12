@@ -4,10 +4,14 @@
 angular.module('myApp', [
   'ngRoute',
   'myApp.masterPage',
-  'myApp.view2',
+  'myApp.blockDetailPage',
   'myApp.version',
   'blockExplorerServices',
 ]).
 config(['$routeProvider', function($routeProvider) {
-  $routeProvider.otherwise({redirectTo: '/'});
+  $routeProvider.when('/block/:blockHash', {
+    templateUrl: 'blockDetail/blockDetail.html',
+    controller: 'BlockDetailCtrl',
+  }).
+  otherwise({redirectTo: '/'});
 }]);

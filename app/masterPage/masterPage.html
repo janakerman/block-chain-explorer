@@ -25,7 +25,7 @@
       <table class="table">
         <tr><th>Number</th><th>Hash</th></tr>
         <tr ng-repeat="block in master.rawBlocks track by $index">
-          <td><a href="blockDetail.html">{{ $index + 1 }}</a></td><td><a href="blockDetail.html">{{ block.hash }}</a></td>
+          <td><a href="#/block/{{block.hash}}">{{ $index + 1 }}</a></td><td><a href="#/block/{{block.hash}}">{{ block.hash }}</a></td>
           </tr>
       </table>
   </div>
