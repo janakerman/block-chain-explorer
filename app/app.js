@@ -5,7 +5,8 @@ angular.module('myApp', [
   'ngRoute',
   'myApp.masterPage',
   'myApp.view2',
-  'myApp.version'
+  'myApp.version',
+  'blockExplorerServices',
 ]).
 config(['$routeProvider', function($routeProvider) {
   $routeProvider.otherwise({redirectTo: '/'});
