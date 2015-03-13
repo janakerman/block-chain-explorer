@@ -15,10 +15,6 @@
       <tr><td>Nonce</td><td>{{detail.block.nonce}}</td></tr>
     </table>
     <h2>Transactions</h2>
-    <table class="table">
-      <tr ng-repeat="transaction in detail.block.tx">
-        <td>{{transaction.hash}}</td>
-      </tr>
-    </table>
+    <transaction-browser transactions="detail.block.tx" test="detail.test"></transaction-browser>
   </div>
 </div>

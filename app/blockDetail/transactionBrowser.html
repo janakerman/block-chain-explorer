@@ -1,0 +1,8 @@
+<table class="table">
+  <button type="button" ng-click="controller.previousTen()" class="btn btn-default nav-button" ng-hide="controller.currentIndex < 10"> Previous 10</button>
+  <p>Showing {{controller.currentIndex}} to {{controller.remainingTransactions()}}</p>
+  <button type="button" ng-click="controller.nextTen()" class="btn btn-default nav-button" ng-hide="controller.currentIndex > controller.transactions.length - 10"> Next 10</button>
+  <tr ng-repeat="transaction in controller.currentTransactions">
+    <td>{{ transaction.hash }}</td>
+    </tr>
+</table>
