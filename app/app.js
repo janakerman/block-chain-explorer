@@ -14,4 +14,9 @@ config(['$routeProvider', function($routeProvider) {
     controller: 'BlockDetailPageCtrl',
   }).
   otherwise({redirectTo: '/'});
-}]);
+}]).
+directive('greyBackground', function () {
+  return function (scope, element, attributes) {
+    element.css('backgroundColor', '#AAAAAA')
+  };
+});
