@@ -18,6 +18,8 @@
     self.oldestBlock = '';
     self.errorMessage = '';
 
+
+
     this.previousTenFromLatest = function () {
       BlockService.getLatestHash().then(
         function(latestHash) {
@@ -59,5 +61,23 @@
     this.previousTenFromLatest();
 
   }]);
+
+  masterPage.filter('blockHashFilter', function() {
+    return function(input, filterText) {
+      // return false;
+      if (!input || !filterText) {
+        return input;
+      }
+
+      var newArray = input.filter(function(element, index, array) {
+        var result = (element.hash.indexOf(filterText) > -1);
+        return result;
+      });
+
+      console.log(newArray);
+
+      return newArray;
+    };
+  });
 
 })();

@@ -5,9 +5,10 @@
     </div>
     <div class="col-md-8">
       <div class="alert alert-danger" role="alert" ng-hide="master.errorMessage === ''">{{master.errorMessage}}</div>
+      <input type="text" name="filter" ng-model="master.filterText" ng-change="master.filterTextChanged()">
       <table class="table" ng-show="master.errorMessage === '' && master.rawBlocks.length > 0">
         <tr><th>Number</th><th>Hash</th></tr>
-        <tr ng-repeat="block in master.rawBlocks track by $index">
+        <tr ng-repeat="block in master.rawBlocks | blockHashFilter: master.filterText">
           <td><a href="#/block/{{block.hash}}">{{ $index + 1 }}</a></td><td><a href="#/block/{{block.hash}}">{{ block.hash }}</a></td>
           </tr>
       </table>
