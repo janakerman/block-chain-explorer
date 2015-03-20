@@ -7,6 +7,7 @@ angular.module('myApp', [
   'myApp.blockDetailPage',
   'myApp.version',
   'blockExplorerServices',
+  'd3',
 ]).
 config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/block/:blockHash', {
