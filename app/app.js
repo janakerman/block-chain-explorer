@@ -19,4 +19,11 @@ directive('greyBackground', function () {
   return function (scope, element, attributes) {
     element.css('backgroundColor', '#AAAAAA')
   };
+}).
+directive('layout', function () {
+ return {
+    templateUrl: 'layout.html',
+    restrict: 'E',
+    transclude: true,
+  }
 });
