@@ -67,19 +67,40 @@
 
     blockService.getTransactions = function(hash, numLevels) {
 
-      var chainGetTransaction = function (parent, childGet, level, success, error) {
+      var chainGetTransaction = function (parents, childGet, level, success, error) {
         if (level === numLevels) {
           success();
           return;
         }
 
         childGet.then (function (rawTransactions) {
-          parent.children = rawTransactions.map(function (transaction) { return { "hash" : transaction.hash }; });
+          debugger;
+          /* Build promises for all the children at this level of the tree. */
+          var childPromises = rawTransactions.map(function (children, index) {
 
-          for (var x=0; x<parent.children.length; x++) {
-            var child = rawTransactions[x];
-            chainGetTransaction(child, blockService.getChildTransactions(child), level + 1, success, error);
+            parents[index].children = [];
+
+            return children.map(function (child) {
+
+              parents[index].children.push( { "hash" : child.hash });
+
+              return blockService.getChildTransactions(child);
+            });
+          })[0];
+
+          var children = [];
+
+          for (var x=0; x<parents.length; x++) {
+            var parent = parents[x];
+
+            if (!parent) {
+              continue;
+            }
+
+            children = children.concat(parent.children);
           }
+
+          chainGetTransaction(children, Promise.all(childPromises), level + 1, success, error);
         });
       };
 
@@ -87,9 +108,9 @@
         blockService.getTransaction(hash)
         .then (function (rawTransaction) {
 
-          var parent = { hash: rawTransaction.hash };
+          var parent = [{ hash: rawTransaction.hash }];
 
-          chainGetTransaction(parent, blockService.getChildTransactions(rawTransaction), 0, 
+          chainGetTransaction(parent, Promise.all([blockService.getChildTransactions(rawTransaction)]), 0, 
             function () {
               resolve(parent);
             }, 
