@@ -76,17 +76,19 @@
         childGet.then (function (rawTransactions) {
           debugger;
           /* Build promises for all the children at this level of the tree. */
-          var childPromises = rawTransactions.map(function (children, index) {
+          var childPromises = [];
 
-            parents[index].children = [];
+          rawTransactions.forEach(function (element, index) {
 
-            return children.map(function (child) {
+            element.forEach(function (element) {
 
-              parents[index].children.push( { "hash" : child.hash });
+              parents[index].children.push({ "hash" : element.hash, "children" : [] });
 
-              return blockService.getChildTransactions(child);
+              childPromises.push(blockService.getChildTransactions(element));
+
             });
-          })[0];
+          });
+
 
           var children = [];
 
@@ -108,7 +110,7 @@
         blockService.getTransaction(hash)
         .then (function (rawTransaction) {
 
-          var parent = [{ hash: rawTransaction.hash }];
+          var parent = [{ hash: rawTransaction.hash, "children" : [] }];
 
           chainGetTransaction(parent, Promise.all([blockService.getChildTransactions(rawTransaction)]), 0, 
             function () {
