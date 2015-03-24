@@ -74,7 +74,6 @@
         }
 
         childGet.then (function (rawTransactions) {
-          debugger;
           /* Build promises for all the children at this level of the tree. */
           var childPromises = [];
 

@@ -83,94 +83,69 @@
     };
   });
 
-  blockDetailPage.directive('visualisation', ['d3Service', function(d3Service) {
+  blockDetailPage.directive('visualisation', ['d3Service', 'BlockService', function(d3Service, BlockService) {
     return {
       restrict: 'EA',
       scope: {},
       link: function(scope, element, attrs) {
-        d3Service.d3().then(function(d3) {
+        
+        var loadDependancies = Promise.all([d3Service, 
+                                           BlockService.getTransactions('8dd171d6f04ba0f5df0c7d0491ae8455134c70ebdedc798bb4c9441d5ee03158', 7)]);
 
-          var svg = d3.select(element[0])
-                      .append("svg")
-                      .style('width', '100$');
+        loadDependancies.then(function(result) {
 
-          $window.onresize = function () {
-            scope.$apply();
-          };
+          var d3 = result[0];
 
-          scope.data = [
-            {name: "Greg", score: 98},
-            {name: "Ari", score: 96},
-            {name: 'Q', score: 75},
-            {name: "Loser", score: 48}
+          var width = 640,
+              height = 480;
+
+          var nodes = [
+              { x:   0, y: 0 },
+              { x: 0, y: 0 }
           ];
 
-          scope.$watch(function() {
-            return angular.element($window)[0].innerWidth;
-          }, function() {
-            scope.render(scope.data);
+          var links = [
+              { source: 0, target: 1 }
+          ];
+
+          var svg = d3.select('body').append('svg')
+              .attr('width', width)
+              .attr('height', height);
+
+          var force = d3.layout.force()
+              .size([width, height])
+              .nodes(nodes)
+              .links(links);
+
+          force.linkDistance(width/2);
+
+          var link = svg.selectAll('.link')
+              .data(links)
+              .enter().append('line')
+              .attr('class', 'link');
+
+          var node = svg.selectAll('.node')
+              .data(nodes)
+              .enter().append('circle')
+              .attr('class', 'node');
+
+          force.on('end', function() {
+
+              console.log('layout ended');
+
+
+              node.attr('r', width/25)
+                  .attr('cx', function(d) { return d.x; })
+                  .attr('cy', function(d) { return d.y; });
+
+              link.attr('x1', function(d) { return d.source.x; })
+                  .attr('y1', function(d) { return d.source.y; })
+                  .attr('x2', function(d) { return d.target.x; })
+                  .attr('y2', function(d) { return d.target.y; });
+
           });
 
-
-
-
-
-           var margin = parseInt(attrs.margin) || 20,
-            barHeight = parseInt(attrs.barHeight) || 20,
-            barPadding = parseInt(attrs.barPadding) || 5;
-
-
-
-
-
-
-
-
-
-          scope.render = function(data) {
-              
-
-
-            // remove all previous items before render
-            svg.selectAll('*').remove();
-
-            // If we don't pass any data, return out of the element
-            if (!data) return;
-
-            // setup variables
-            var width = d3.select(element[0]).node().offsetWidth - margin,
-                // calculate the height
-                height = scope.data.length * (barHeight + barPadding),
-                // Use the category20() scale function for multicolor support
-                color = d3.scale.category20(),
-                // our xScale
-                xScale = d3.scale.linear()
-                  .domain([0, d3.max(data, function(d) {
-                    return d.score;
-                  })])
-                  .range([0, width]);
-
-            // set the height based on the calculations above
-            svg.attr('height', height);
-
-            //create the rectangles for the bar chart
-            svg.selectAll('rect')
-              .data(data).enter()
-              .append('rect')
-              .attr('height', barHeight)
-              .attr('width', 140)
-              .attr('x', Math.round(margin/2))
-              .attr('y', function(d,i) {
-                return i * (barHeight + barPadding);
-              })
-              .attr('fill', function(d) { return color(d.score); })
-              .transition()
-              .duration(1000)
-              .attr('width', function(d) {
-                return xScale(d.score);
-              });
-
-          };
+          force.start();
 
         });
       },
