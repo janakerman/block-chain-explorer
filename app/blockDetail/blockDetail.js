@@ -90,23 +90,44 @@
       link: function(scope, element, attrs) {
         
         var loadDependancies = Promise.all([d3Service, 
-                                           BlockService.getTransactions('8dd171d6f04ba0f5df0c7d0491ae8455134c70ebdedc798bb4c9441d5ee03158', 7)]);
+                                           BlockService.getTransactions('8dd171d6f04ba0f5df0c7d0491ae8455134c70ebdedc798bb4c9441d5ee03158', 8)]);
 
         loadDependancies.then(function(result) {
 
           var d3 = result[0];
 
+          var tree = result[1];
+
+          var nodes = [];
+          var links = [];
+          var index = 0;
+
+          var dataFromTree = function (parent) {
+            parent.uid = index;
+            nodes.push(parent);
+
+            if (parent.children.length === 0) {
+              return;
+            }
+
+            parent.children.forEach(function(element) {
+              var childId = ++index;
+
+              links.push({  source : parent.uid,
+                            target : childId });
+
+              dataFromTree(element, childId);
+            });
+          };
+
+          
+          dataFromTree(tree[0]);
+          console.log(tree);
+
           var width = 640,
               height = 480;
 
-          var nodes = [
-              { x:   0, y: 0 },
-              { x: 0, y: 0 }
-          ];
-
-          var links = [
-              { source: 0, target: 1 }
-          ];
+          var animationStep = 400;
 
           var svg = d3.select('body').append('svg')
               .attr('width', width)
@@ -117,7 +138,11 @@
               .nodes(nodes)
               .links(links);
 
-          force.linkDistance(width/2);
+          force.linkDistance(20);
+
+          force.charge(function(node) {
+            return -100;
+          });
 
           var link = svg.selectAll('.link')
               .data(links)
@@ -129,12 +154,12 @@
               .enter().append('circle')
               .attr('class', 'node');
 
-          force.on('end', function() {
+          force.on('tick', function() {
 
               console.log('layout ended');
 
 
-              node.attr('r', width/25)
+              node.attr('r', 10)
                   .attr('cx', function(d) { return d.x; })
                   .attr('cy', function(d) { return d.y; });
 
@@ -146,6 +171,8 @@
           });
 
           force.start();
+
+
 
         });
       },
