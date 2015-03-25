@@ -90,7 +90,7 @@
       link: function(scope, element, attrs) {
         
         var loadDependancies = Promise.all([d3Service, 
-                                           BlockService.getTransactions('8dd171d6f04ba0f5df0c7d0491ae8455134c70ebdedc798bb4c9441d5ee03158', 8)]);
+                                           BlockService.getTransactions('8dd171d6f04ba0f5df0c7d0491ae8455134c70ebdedc798bb4c9441d5ee03158', 1)]);
 
         loadDependancies.then(function(result) {
 
@@ -113,7 +113,7 @@
             parent.children.forEach(function(element) {
               var childId = ++index;
 
-              links.push({  source : parent.uid,
+              links.push({  source : parent,
                             target : childId });
 
               dataFromTree(element, childId);
@@ -122,7 +122,6 @@
 
           
           dataFromTree(tree[0]);
-          console.log(tree);
 
           var width = 640,
               height = 480;
@@ -133,31 +132,43 @@
               .attr('width', width)
               .attr('height', height);
 
+              svg.append("g").attr("class", "tx-links");
+              svg.append("g").attr("class", "tx-nodes");
           var force = d3.layout.force()
               .size([width, height])
               .nodes(nodes)
-              .links(links);
+              .links(links)
+              .linkDistance(20)
+              .charge(-100);
 
-          force.linkDistance(20);
 
-          force.charge(function(node) {
-            return -100;
+
+          nodes.push( { x: width/2, y: 0, fixed: true} );
+          nodes.push( { x: width/2, y: height, fixed: true} );
+
+          links.push( { source:0, target: nodes.length-2} );
+
+          var headlessNodes = nodes.slice(1);
+          headlessNodes.forEach(function (element, index) {
+            links.push( {source:index, target: nodes.length-1} );
           });
 
-          var link = svg.selectAll('.link')
+
+          var link = svg.selectAll('g.tx-links').selectAll('.link')
               .data(links)
               .enter().append('line')
               .attr('class', 'link');
 
-          var node = svg.selectAll('.node')
+          var node = svg.selectAll('g.tx-nodes').selectAll('.node, .anchor')
               .data(nodes)
               .enter().append('circle')
-              .attr('class', 'node');
+              .attr('class', function(d) {
+                return d.fixed ? 'anchor' : 'node'; 
+              });
 
           force.on('tick', function() {
 
               console.log('layout ended');
-
 
               node.attr('r', 10)
                   .attr('cx', function(d) { return d.x; })
