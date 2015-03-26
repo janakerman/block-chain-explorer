@@ -126,13 +126,22 @@
               height = 480;
 
           dataFromTree(tree[0], 0);
-          nodes[0].fixed = true;
-          nodes[0].cx = width/2;
-          nodes[0].cy = height/2;
+
+          nodes.slice().splice(0, 1).forEach(function (element, index) {
+            if (index === 0) {
+              element.fixed = true;
+              element.x = width/2;
+              element.y = height/2;
+            } else {
+              element.y = 0;
+              element.x = 0;  
+            }
+            
+          });
 
 
           var svg = d3.select('svg')
-              .attr('width', width)
+              .attr('width', '100%')
               .attr('height', height);
 
               svg.append("g").attr("class", "tx-links");
