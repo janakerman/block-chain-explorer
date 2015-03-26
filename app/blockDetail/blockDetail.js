@@ -131,7 +131,8 @@
           var node = svg.selectAll('g.tx-nodes').selectAll('.node, .anchor').data(nodes);
             
           node.enter().append('circle')
-            .attr('class', 'node');
+            .attr('class', 'node')
+            .attr("tx-hash", function(d) { return d.hash; });
 
           node.exit().remove();
           
