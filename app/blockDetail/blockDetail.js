@@ -98,21 +98,18 @@
       },
       link: function(scope, element, attrs) {
 
-        var nodes, links, svg, force, height = 480, width = 640;
+        var nodes = [], links = [], svg, force, height = 480, width = 640;
 
-        var startPromse = Promise.all([d3Service, BlockService.getTransactions(scope.rootHash, 6)]);                                          
-
-        startPromse.then(function(results) {
-          var d3 = results[0];
+        d3Service.then(function(d3) {
 
           force = d3.layout.force();
-          nodes = force.nodes();
-          links = force.links();
+          force.nodes(nodes);
+          force.links(links);
 
           svg = d3.select('svg')
               .attr('width', width)
               .attr('height', height)
-              .style('background-color', 'blue');
+              .style('background-color', 'gray');
 
               svg.append("g").attr("class", "tx-links");
               svg.append("g").attr("class", "tx-nodes");
@@ -123,15 +120,19 @@
         var update = function () {
           if (!svg || !force) return;
 
-          var link = svg.selectAll('g.tx-links').selectAll('.link')
-            .data(links)
-            .enter().append('line')
+          var link = svg.selectAll('g.tx-links').selectAll('.link').data(links);
+
+          link.enter().append('line')
             .attr('class', 'link');
 
-          var node = svg.selectAll('g.tx-nodes').selectAll('.node, .anchor')
-            .data(nodes)
-            .enter().append('circle')
+          link.exit().remove();
+
+          var node = svg.selectAll('g.tx-nodes').selectAll('.node, .anchor').data(nodes);
+            
+          node.enter().append('circle')
             .attr('class', 'node');
+
+          node.exit().remove();
           
           force.on('tick', function() {
 
@@ -165,7 +166,7 @@
         scope.$watch(function() {
           return scope.rootHash;
         }, function() {
-          BlockService.getTransactions(scope.rootHash, 6)
+          BlockService.getTransactions(scope.rootHash, 3)
           .then(function (result) {
 
             var dataFromTree = function () {
