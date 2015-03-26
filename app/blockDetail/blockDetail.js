@@ -90,7 +90,7 @@
       link: function(scope, element, attrs) {
         
         var loadDependancies = Promise.all([d3Service, 
-                                           BlockService.getTransactions('8dd171d6f04ba0f5df0c7d0491ae8455134c70ebdedc798bb4c9441d5ee03158', 8)]);
+                                           BlockService.getTransactions('8dd171d6f04ba0f5df0c7d0491ae8455134c70ebdedc798bb4c9441d5ee03158', 6)]);
 
         loadDependancies.then(function(result) {
 
@@ -102,7 +102,7 @@
           var links = [];
           var index = 0;
 
-          var dataFromTree = function (parent) {
+          var dataFromTree = function (parent, layer) {
             parent.uid = index;
             nodes.push(parent);
 
@@ -114,9 +114,10 @@
               index++;
 
               links.push({  source : parent,
-                            target : element});
+                            target : element,
+                            layer : layer});
 
-              dataFromTree(element);
+              dataFromTree(element, layer+1);
             });
           };
           
@@ -124,7 +125,7 @@
           var width = 640,
               height = 480;
 
-          dataFromTree(tree[0], []);
+          dataFromTree(tree[0], 0);
           nodes[0].fixed = true;
           nodes[0].cx = width/2;
           nodes[0].cy = height/2;
@@ -141,8 +142,12 @@
               .size([width, height])
               .nodes(nodes)
               .links(links)
-              .linkDistance(20)
-              .charge(-100);
+              .linkDistance(function(d) {
+                return 5 / (1/d.layer);
+              })
+              .charge(-700)
+              .chargeDistance(100)
+              .alpha(2);
 
           var link = svg.selectAll('g.tx-links').selectAll('.link')
               .data(links)
