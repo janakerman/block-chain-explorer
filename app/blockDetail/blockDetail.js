@@ -132,7 +132,12 @@
             
           node.enter().append('circle')
             .attr('class', 'node')
-            .attr("tx-hash", function(d) { return d.hash; });
+            .attr("tx-hash", function(d) { return d.hash; })
+            .on('click', function (d) {
+              scope.$apply(function() {
+                scope.rootHash = d.hash; 
+              });
+            });
 
           node.exit().remove();
           
