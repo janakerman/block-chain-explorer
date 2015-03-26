@@ -90,7 +90,7 @@
       link: function(scope, element, attrs) {
         
         var loadDependancies = Promise.all([d3Service, 
-                                           BlockService.getTransactions('8dd171d6f04ba0f5df0c7d0491ae8455134c70ebdedc798bb4c9441d5ee03158', 1)]);
+                                           BlockService.getTransactions('8dd171d6f04ba0f5df0c7d0491ae8455134c70ebdedc798bb4c9441d5ee03158', 8)]);
 
         loadDependancies.then(function(result) {
 
@@ -111,22 +111,24 @@
             }
 
             parent.children.forEach(function(element) {
-              var childId = ++index;
+              index++;
 
               links.push({  source : parent,
-                            target : childId });
+                            target : element});
 
-              dataFromTree(element, childId);
+              dataFromTree(element);
             });
           };
-
           
-          dataFromTree(tree[0]);
 
           var width = 640,
               height = 480;
 
-          var animationStep = 400;
+          dataFromTree(tree[0], []);
+          nodes[0].fixed = true;
+          nodes[0].cx = width/2;
+          nodes[0].cy = height/2;
+
 
           var svg = d3.select('body').append('svg')
               .attr('width', width)
@@ -134,25 +136,13 @@
 
               svg.append("g").attr("class", "tx-links");
               svg.append("g").attr("class", "tx-nodes");
+
           var force = d3.layout.force()
               .size([width, height])
               .nodes(nodes)
               .links(links)
               .linkDistance(20)
               .charge(-100);
-
-
-
-          nodes.push( { x: width/2, y: 0, fixed: true} );
-          nodes.push( { x: width/2, y: height, fixed: true} );
-
-          links.push( { source:0, target: nodes.length-2} );
-
-          var headlessNodes = nodes.slice(1);
-          headlessNodes.forEach(function (element, index) {
-            links.push( {source:index, target: nodes.length-1} );
-          });
-
 
           var link = svg.selectAll('g.tx-links').selectAll('.link')
               .data(links)
@@ -162,9 +152,7 @@
           var node = svg.selectAll('g.tx-nodes').selectAll('.node, .anchor')
               .data(nodes)
               .enter().append('circle')
-              .attr('class', function(d) {
-                return d.fixed ? 'anchor' : 'node'; 
-              });
+              .attr('class', 'node'); 
 
           force.on('tick', function() {
 
@@ -182,8 +170,6 @@
           });
 
           force.start();
-
-
 
         });
       },
