@@ -12,12 +12,15 @@
   blockDetailPage.controller('BlockDetailPageCtrl', ['$scope', '$routeParams', 'BlockService', function($scope, $routeParams, BlockService) {
     var self = this;
 
-    self.rootHash = '8dd171d6f04ba0f5df0c7d0491ae8455134c70ebdedc798bb4c9441d5ee03158';
 
     BlockService.getBlock($routeParams.blockHash).then(function(block) {
       $scope.$apply(function() {
         self.block = block;
       });
+    }).then(function() {    
+      $scope.$apply(function() {
+        self.rootHash = self.block.tx[0].hash;
+      });  
     });
   }]);
 
