@@ -27,9 +27,12 @@
       restrict: 'E',
       scope: {
         transactions: '=transactions',
+        visualisationHash: '=visualisationHash'
       },
       controller: function($scope) {
         var vm = this;
+
+        console.log($scope.visualisationHash);
 
         $scope.$watch(function() {
             return $scope.transactions;
