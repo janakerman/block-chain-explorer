@@ -164,6 +164,9 @@
         scope.$watch(function() {
           return scope.rootHash;
         }, function() {
+
+          if (scope.rootHash === undefined) return;
+
           BlockService.getTransactions(scope.rootHash, 3)
           .then(function (result) {
 
