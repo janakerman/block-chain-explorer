@@ -113,8 +113,6 @@
 
               svg.append("g").attr("class", "tx-links");
               svg.append("g").attr("class", "tx-nodes");
-
-              update();
         });
 
         var update = function () {
