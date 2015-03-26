@@ -97,93 +97,42 @@
         rootHash: "=rootHash",
       },
       link: function(scope, element, attrs) {
-        
 
-        scope.$watch(function() {
-            return scope.rootHash;
-          }, function() {
-            console.log(scope.rootHash);
-          });
+        var nodes, links, svg, force, height = 480, width = 640;
 
-        var loadDependancies = Promise.all([d3Service, 
-                                           BlockService.getTransactions(scope.rootHash, 6)]);
+        var startPromse = Promise.all([d3Service, BlockService.getTransactions(scope.rootHash, 6)]);                                          
 
-        loadDependancies.then(function(result) {
+        startPromse.then(function(results) {
+          var d3 = results[0];
 
-          var d3 = result[0];
+          force = d3.layout.force();
+          nodes = force.nodes();
+          links = force.links();
 
-          var tree = result[1];
-
-          var nodes = [];
-          var links = [];
-          var index = 0;
-
-          var dataFromTree = function (parent, layer) {
-            parent.uid = index;
-            nodes.push(parent);
-
-            if (parent.children.length === 0) {
-              return;
-            }
-
-            parent.children.forEach(function(element) {
-              index++;
-
-              links.push({  source : parent,
-                            target : element,
-                            layer : layer});
-
-              dataFromTree(element, layer+1);
-            });
-          };
-          
-
-          var width = 640,
-              height = 480;
-
-          dataFromTree(tree[0], 0);
-
-          nodes.slice().splice(0, 1).forEach(function (element, index) {
-            if (index === 0) {
-              element.fixed = true;
-              element.x = width/2;
-              element.y = height/2;
-            } else {
-              element.y = 0;
-              element.x = 0;  
-            }
-            
-          });
-
-
-          var svg = d3.select('svg')
-              .attr('width', '100%')
-              .attr('height', height);
+          svg = d3.select('svg')
+              .attr('width', width)
+              .attr('height', height)
+              .style('background-color', 'blue');
 
               svg.append("g").attr("class", "tx-links");
               svg.append("g").attr("class", "tx-nodes");
 
-          var force = d3.layout.force()
-              .size([width, height])
-              .nodes(nodes)
-              .links(links)
-              .linkDistance(function(d) {
-                return 5 / (1/d.layer);
-              })
-              .charge(-700)
-              .chargeDistance(100)
-              .alpha(2);
+              update();
+        });
+
+        var update = function () {
+          if (!svg || !force) return;
 
           var link = svg.selectAll('g.tx-links').selectAll('.link')
-              .data(links)
-              .enter().append('line')
-              .attr('class', 'link');
+            .data(links)
+            .enter().append('line')
+            .attr('class', 'link');
 
           var node = svg.selectAll('g.tx-nodes').selectAll('.node, .anchor')
-              .data(nodes)
-              .enter().append('circle')
-              .attr('class', 'node'); 
-
+            .data(nodes)
+            .enter().append('circle')
+            .attr('class', 'node');
+          
           force.on('tick', function() {
 
               console.log('layout ended');
@@ -199,11 +148,73 @@
 
           });
 
+          force
+          .size([width, height])
+          .nodes(nodes)
+          .links(links)
+          .linkDistance(function(d) {
+            return 5 / (1/d.layer);
+          })
+          .charge(-700)
+          .chargeDistance(100)
+          .alpha(2);
+
           force.start();
+        };
+
+        scope.$watch(function() {
+          return scope.rootHash;
+        }, function() {
+          BlockService.getTransactions(scope.rootHash, 6)
+          .then(function (result) {
+
+            var dataFromTree = function () {
+              var index = 0;
+
+              return function (parent, layer) {
+                parent.uid = index;
+                nodes.push(parent);
+
+                if (parent.children.length === 0) {
+                  return;
+                }
+
+                parent.children.forEach(function(element) {
+                  index++;
+
+                  links.push({  source : parent,
+                                target : element,
+                                layer : layer});
+
+                  dataFromTree(element, layer+1);
+                });
+              };
+            }();
+
+            
+
+            nodes.length = 0;
+            links.length = 0;
+            dataFromTree(result[0], 0);
+
+            nodes.slice().splice(0, 1).forEach(function (element, index) {
+              if (index === 0) {
+                element.fixed = true;
+                element.x = width/2;
+                element.y = height/2;
+              } else {
+                element.y = 0;
+                element.x = 0;  
+              }
+            });
+
+            update();
+
+          });
 
         });
       },
     };
   }]);
 
-})(this);
+})(this);  
