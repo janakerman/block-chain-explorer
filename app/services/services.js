@@ -81,6 +81,9 @@
 
             element.forEach(function (element) {
 
+              // Check for sentinal empty object indicating error obtaining transaction.
+              if (Object.getOwnPropertyNames(element).length === 0) return;
+
               parents[index].children.push({ "hash" : element.hash, "children" : [] });
 
               childPromises.push(blockService.getChildTransactions(element));
@@ -145,7 +148,7 @@
           resolve(response.data); 
         },
         function (error) {
-          reject();
+          resolve({}); // Send an empty object back as a flag - we don't want to cause all of our child promises to fail.
         });
       });
     };
