@@ -32,7 +32,9 @@
       controller: function($scope) {
         var vm = this;
 
-        console.log($scope.visualisationHash);
+        $scope.updateHash = function (newHash) {
+          $scope.visualisationHash = newHash;
+        };
 
         $scope.$watch(function() {
             return $scope.transactions;
@@ -96,6 +98,13 @@
       },
       link: function(scope, element, attrs) {
         
+
+        scope.$watch(function() {
+            return scope.rootHash;
+          }, function() {
+            console.log(scope.rootHash);
+          });
+
         var loadDependancies = Promise.all([d3Service, 
                                            BlockService.getTransactions(scope.rootHash, 6)]);
 
