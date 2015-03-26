@@ -128,10 +128,10 @@
 
           link.exit().remove();
 
-          var node = svg.selectAll('g.tx-nodes').selectAll('.node, .anchor').data(nodes);
+          var node = svg.selectAll('g.tx-nodes').selectAll('.node-group').data(nodes);
             
-          node.enter().append('circle')
-            .attr('class', 'node')
+          node.enter().append('g')
+            .attr('class', 'node-group')
             .attr("tx-hash", function(d) { return d.hash; })
             .on('click', function (d) {
               scope.$apply(function() {
@@ -139,14 +139,26 @@
               });
             });
 
-          node.exit().remove();
+            node.exit().remove();
+
+
+            node.append('circle')
+              .attr('r', 20)
+              .attr('class', 'node');
+
+            node.append('text')
+              .style("text-anchor", "middle")
+              .attr("fill", "white")
+              .text(function (d) { return d.hash.slice(0, 3); });
+
+          
           
           force.on('tick', function() {
 
               console.log('layout ended');
 
-              node.attr('r', 10)
-                  .attr('cx', function(d) { return d.x; })
+              node
+                  .attr('transform', function(d) { return "translate(" + d.x + ", " + d.y + ")"; })
                   .attr('cy', function(d) { return d.y; });
 
               link.attr('x1', function(d) { return d.source.x; })
@@ -161,10 +173,10 @@
           .nodes(nodes)
           .links(links)
           .linkDistance(function(d) {
-            return 5 / (1/d.layer);
+            return 10 / (1/d.layer);
           })
-          .charge(-700)
-          .chargeDistance(100)
+          .charge(-1800)
+          .chargeDistance(140)
           .alpha(2);
 
           force.start();
