@@ -12,6 +12,8 @@
   blockDetailPage.controller('BlockDetailPageCtrl', ['$scope', '$routeParams', 'BlockService', function($scope, $routeParams, BlockService) {
     var self = this;
 
+    self.rootHash = '8dd171d6f04ba0f5df0c7d0491ae8455134c70ebdedc798bb4c9441d5ee03158';
+
     BlockService.getBlock($routeParams.blockHash).then(function(block) {
       $scope.$apply(function() {
         self.block = block;
@@ -86,11 +88,13 @@
   blockDetailPage.directive('visualisation', ['d3Service', 'BlockService', function(d3Service, BlockService) {
     return {
       restrict: 'EA',
-      scope: {},
+      scope: {
+        rootHash: "=rootHash",
+      },
       link: function(scope, element, attrs) {
         
         var loadDependancies = Promise.all([d3Service, 
-                                           BlockService.getTransactions('8dd171d6f04ba0f5df0c7d0491ae8455134c70ebdedc798bb4c9441d5ee03158', 6)]);
+                                           BlockService.getTransactions(scope.rootHash, 6)]);
 
         loadDependancies.then(function(result) {
 
