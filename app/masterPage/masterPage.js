@@ -34,7 +34,7 @@ var test = 0;
           $scope.$apply();
 
         });
-    }
+    };
 
     this.previousTenBlocks = function (hash) {
       BlockService.getBlocks(hash, 10).then(
@@ -50,15 +50,15 @@ var test = 0;
           $scope.$apply();
         });
 
-    }
+    };
 
     this.previousTen = function () {
       self.previousTenBlocks(self.oldestBlock);
-    }
+    };
 
     this.convertHexToDecimal = function(hex) {
       return parseInt(hex, 16);
-    }
+    };
 
     this.previousTenFromLatest();
   }]);
