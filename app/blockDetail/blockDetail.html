@@ -2,7 +2,7 @@
   <div class="container" ng-controller="BlockDetailPageCtrl as detail">
     <div class="row">
     <div class="col-md-8 col-md-offset-2">
-      <h1>Block {{detail.block.hash}}</h1>
+      <h1>Block {{detail.block.hash | removeLeadingZeros}}</h1>
       <h2>Header</h2>
       <table class="table">
         <tr><td>Hash</td><td>{{detail.block.hash}}</td></tr>
