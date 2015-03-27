@@ -97,7 +97,7 @@ var test = 0;
   masterPage.directive('blockCard', function() {
     return {
       restrict: 'E',
-      template: '<div><div class="arrow-right"></div><h1>{{ rawBlock.hash | removeLeadingZeros }}</h1><p># Transactions: {{ rawBlock.tx.length }}</p></div>',
+      template: '<a href="#/block/{{rawBlock.hash}}"><div><div class="arrow-right"></div><h1>{{ rawBlock.hash | removeLeadingZeros }}</h1><p># Transactions: {{ rawBlock.tx.length }}</p></div></a>',
       scope: {
         rawBlock: "=rawBlock",
       }
