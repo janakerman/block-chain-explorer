@@ -168,10 +168,7 @@
           
           force.on('tick', function() {
 
-              console.log('layout ended');
-
-              node
-                  .attr('transform', function(d) { return "translate(" + d.x + ", " + d.y + ")"; });
+              node.attr('transform', function(d) { return "translate(" + d.x + ", " + d.y + ")"; });
 
               link.attr('x1', function(d) { return d.source.x; })
                   .attr('y1', function(d) { return d.source.y; })
