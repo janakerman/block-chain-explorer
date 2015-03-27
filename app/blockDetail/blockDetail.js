@@ -121,7 +121,10 @@
         var update = function () {
           if (!svg || !force) return;
 
-          var link = svg.selectAll('g.tx-links').selectAll('.link').data(links);
+          d3.select("svg g.tx-nodes g").remove();
+          d3.select("svg g.tx-nodes g").remove();
+
+          var link = svg.selectAll('g.tx-links').selectAll('.link').data(links, function(d) { return d; });
 
           link.enter().append('line')
             .attr('class', 'link');
@@ -130,7 +133,10 @@
 
           var node = svg.selectAll('g.tx-nodes').selectAll('.node-group').data(nodes);
             
-          node.enter().append('g')
+          // Enter selection.
+          var groupEnter = node.enter().append('g');
+
+          groupEnter
             .attr('class', 'node-group')
             .attr("tx-hash", function(d) { return d.hash; })
             .on('click', function (d) {
@@ -139,17 +145,23 @@
               });
             });
 
-            node.exit().remove();
+          groupEnter
+             .append('circle')
+             .attr('r', 20)
+             .attr('class', 'node');
 
+          groupEnter
+             .append('text')
+             .style("text-anchor", "middle")
+             .attr("fill", "white");
 
-            node.append('circle')
-              .attr('r', 20)
-              .attr('class', 'node');
+            svg.selectAll('svg text').text(function (d) { 
+              return d.hash.slice(0, 3); 
+            });
 
-            node.append('text')
-              .style("text-anchor", "middle")
-              .attr("fill", "white")
-              .text(function (d) { return d.hash.slice(0, 3); });
+          // Exit selection.
+          node.exit().remove();
+
 
           
           
@@ -158,8 +170,7 @@
               console.log('layout ended');
 
               node
-                  .attr('transform', function(d) { return "translate(" + d.x + ", " + d.y + ")"; })
-                  .attr('cy', function(d) { return d.y; });
+                  .attr('transform', function(d) { return "translate(" + d.x + ", " + d.y + ")"; });
 
               link.attr('x1', function(d) { return d.source.x; })
                   .attr('y1', function(d) { return d.source.y; })
@@ -173,7 +184,7 @@
           .nodes(nodes)
           .links(links)
           .linkDistance(function(d) {
-            return 10 / (1/d.layer);
+            return 15 / (1/d.layer);
           })
           .charge(-1800)
           .chargeDistance(140)
