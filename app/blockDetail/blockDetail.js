@@ -121,10 +121,10 @@
         var update = function () {
           if (!svg || !force) return;
 
-          d3.select("svg g.tx-nodes g").remove();
-          d3.select("svg g.tx-nodes g").remove();
+          d3.selectAll("svg g.tx-nodes g").remove();
+          d3.selectAll("svg g.tx-links line").remove();
 
-          var link = svg.selectAll('g.tx-links').selectAll('.link').data(links, function(d) { return d; });
+          var link = svg.selectAll('g.tx-links').selectAll('.link').data(links);
 
           link.enter().append('line')
             .attr('class', 'link');
