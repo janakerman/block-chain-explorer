@@ -18,7 +18,7 @@ config(['$routeProvider', function($routeProvider) {
 }]).
 directive('greyBackground', function () {
   return function (scope, element, attributes) {
-    element.css('backgroundColor', '#AAAAAA')
+    element.addClass('list-box');
   };
 }).
 directive('layout', function () {
@@ -26,5 +26,5 @@ directive('layout', function () {
     templateUrl: 'layout.html',
     restrict: 'E',
     transclude: true,
-  }
+  };
 });
