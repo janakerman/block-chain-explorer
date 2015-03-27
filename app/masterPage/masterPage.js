@@ -30,9 +30,7 @@ var test = 0;
           self.previousTenBlocks(latestHash);
         },
         function(error) {
-          self.errorMessage = retryError;
-          $scope.$apply();
-
+          self.previousTenBlocks('000000008d9dc510f23c2657fc4f67bea30078cc05a90eb89e84cc475c080805');
         });
     };
 
@@ -48,6 +46,7 @@ var test = 0;
         function(error) {
           self.errorMessage = retryError;
           $scope.$apply();
+          self.previousTenBlocks('000000008d9dc510f23c2657fc4f67bea30078cc05a90eb89e84cc475c080805');
         });
 
     };
