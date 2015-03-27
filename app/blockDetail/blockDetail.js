@@ -137,19 +137,27 @@
           // Enter selection.
           var groupEnter = node.enter().append('g');
 
+          var node_drag = d3.behavior.drag()
+            .on("dragstart", dragstart)
+            .on("drag", dragmove)
+            .on("dragend", dragend);
+
           groupEnter
             .attr('class', 'node-group')
             .attr("tx-hash", function(d) { return d.hash; })
-            .on('click', function (d) {
+            .on('dblclick', function (d) {
               scope.$apply(function() {
                 scope.rootHash = d.hash; 
               });
-            });
+            }).call(node_drag);
+
+
 
           groupEnter
              .append('circle')
              .attr('r', 20)
-             .attr('class', 'node');
+             .attr('class', 'node')
+             .call(node_drag);
 
           groupEnter
              .append('text')
@@ -179,6 +187,33 @@
                   .attr('y2', function(d) { return d.target.y; });
 
           });
+
+         function dragstart(d, i) {
+              force.stop() // stops the force auto positioning before you start dragging
+          }
+
+          function dragmove(d, i) {
+              d.px += d3.event.dx;
+              d.py += d3.event.dy;
+              d.x += d3.event.dx;
+              d.y += d3.event.dy; 
+              tick(); // this is the key to make it work together with updating both px,py,x,y on d !
+          }
+
+          function dragend(d, i) {
+              d.fixed = true; // of course set the node to fixed so the force doesn't include the node in its auto positioning stuff
+              tick();
+              force.resume();
+          }
+
+          function tick() {
+            link.attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+
+            node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+          };
 
           force
           .size([width, height])
