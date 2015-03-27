@@ -1,5 +1,10 @@
 /* app css stylesheet */
 
+body {
+  background-image: url("symphony.png");
+  background-repeat: repeat;
+}
+
 .menu {
   list-style: none;
   border-bottom: 0.1em solid black;
