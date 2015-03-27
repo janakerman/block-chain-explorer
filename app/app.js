@@ -31,6 +31,8 @@ directive('layout', function () {
 .filter('removeLeadingZeros', function () {
     return function (input) {
 
+      if (input === undefined) return;
+
       var indexOfLastConsequtiveZero = 0;
       for (var i = 0, len = input.length; i < len; i++) {
         if (input[i] != '0') {
