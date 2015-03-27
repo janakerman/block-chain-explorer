@@ -95,7 +95,7 @@ body {
   border-bottom: 30px solid transparent;
   transform-origin: -20% 25%;
   
-  border-left: 30px solid green;
+  border-left: 30px solid #444;
   
     transform: rotate(-45deg);
 }
