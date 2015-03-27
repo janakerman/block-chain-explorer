@@ -112,7 +112,7 @@
           svg = d3.select('svg')
               .attr('width', width)
               .attr('height', height)
-              .style('background-color', 'gray');
+              .style('background-color', 'transparent');
 
               svg.append("g").attr("class", "tx-links");
               svg.append("g").attr("class", "tx-nodes");
