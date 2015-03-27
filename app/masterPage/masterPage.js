@@ -67,8 +67,6 @@ var test = 0;
 
       BlockService.getTransactions('8dd171d6f04ba0f5df0c7d0491ae8455134c70ebdedc798bb4c9441d5ee03158', 3)
       .then(function (response) {
-        console.log(response);
-        console.log('eeep');
       });
     }
 
@@ -87,8 +85,6 @@ var test = 0;
         var result = (element.hash.indexOf(filterText) > -1);
         return result;
       });
-
-      console.log(newArray);
 
       return newArray;
     };
