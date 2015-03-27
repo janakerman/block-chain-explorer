@@ -88,21 +88,4 @@ var test = 0;
     };
   });
 
-  masterPage.filter('removeLeadingZeros', function () {
-    return function (input) {
-
-      var indexOfLastConsequtiveZero = 0;
-      for (var i = 0, len = input.length; i < len; i++) {
-        if (input[i] != '0') {
-          indexOfLastConsequtiveZero = i;
-          break;
-        }
-      }
-
-      var remainder = input.length - indexOfLastConsequtiveZero;
-
-      return input.slice(indexOfLastConsequtiveZero, indexOfLastConsequtiveZero + Math.min(remainder, 5));
-    };
-  });
-
 })();
