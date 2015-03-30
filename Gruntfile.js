@@ -7,7 +7,15 @@ module.exports = function(grunt) {
 
 		paths: {
 			jsSrc: [
-		       'app/app.js'
+		        'app/app.js',
+		        'app/masterPage/masterPage.js',
+		        'app/services/services.js',
+		        'app/blockDetail/blockDetail.js',
+		        'app/d3/d3.js',
+		        'app/components/version/version.js',
+  				'app/components/version/version-directive.js',
+  				'app/components/version/interpolate-filter.js',
+  				'app/bower_components/angular-route/angular-route.js'
 		    ],
 		    jsDest: 'app/script.js',
 		},
