@@ -43,11 +43,26 @@ module.exports = function(grunt) {
 					'<%= paths.jsDest %>': '<%= paths.jsSrc %>'
 				}
 			}    
+		},
+
+		watch: {
+			options: { livereload: true },
+			files: [
+				'app/app.js',
+				'app/bower_components/**/*',
+				'app/masterPage/**/*',
+				'app/blockDetail/**/*',
+				'app/components/**/*'
+			],
+			tasks: ['build:dev']
 		}
+		
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-clean');
+
+	grunt.loadNpmTasks('grunt-contrib-watch');
 
 	grunt.registerTask('build', ['scripts']);
 	grunt.registerTask('scripts', ['clean:scriptMap', 'uglify:production']);
