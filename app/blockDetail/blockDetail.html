@@ -3,6 +3,7 @@
     <div class="row">
     <div class="col-md-8 col-md-offset-2">
       <h1>Block {{detail.block.hash | removeLeadingZeros}}</h1>
+      <button type="button" class="btn btn-default" ng-click="detail.verifyBlock()">Verify</button><span>Verification status: {{ detail.verificationStatus }}</span>
       <h2>Header</h2>
       <table class="table">
         <tr><td>Hash</td><td>{{detail.block.hash}}</td></tr>

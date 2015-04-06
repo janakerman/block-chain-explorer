@@ -12,10 +12,36 @@
   blockDetailPage.controller('BlockDetailPageCtrl', ['$scope', '$routeParams', 'BlockService', function($scope, $routeParams, BlockService) {
     var self = this;
 
+    self.verificationStatus = 'Unverified';
+
+    this.verifyBlock = function () {
+      if (self.block == undefined) {
+        return;
+      }
+
+      BlockService.verifyBlock(self.block).then (function (isValid) {
+        $scope.$apply(function() {
+
+          if (isValid === 'true') {
+            self.verificationStatus = 'Valid';
+          }
+          else {
+            self.verificationStatus = 'Invalid';
+          }
+        });
+      },
+      function (error) {
+        console.log('error');
+        console.log(error);
+        self.verificationStatus = 'Unverified';
+      });
+    };
+
 
     BlockService.getBlock($routeParams.blockHash).then(function(block) {
       $scope.$apply(function() {
         self.block = block;
+        self.verificationStatus = 'Unverified';
       });
     }).then(function() {    
       $scope.$apply(function() {

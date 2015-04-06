@@ -153,6 +153,23 @@
       });
     };
 
+    blockService.verifyBlock = function (rawBlock) {
+      return new Promise (function (resolve, reject) {
+        var req = {
+          method: 'POST',
+          url: '/service/verifyBlock/',
+          data: rawBlock
+        }
+
+        $http(req).then(function(response) {
+          resolve(response.data); 
+        },
+        function (error) {
+          reject(error);
+        });
+      });
+    }
+
     return blockService;
 
   }]);
