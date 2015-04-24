@@ -1,6 +1,6 @@
 /// <reference path="../definitionFiles/angular/angular.d.ts" />
 /// <reference path="../definitionFiles/es6-promise/es6-promise.d.ts" />
-
+/// <reference path="../services/classes.ts" />
 
 'use strict';
 
@@ -9,9 +9,7 @@ var test = 0;
 module myApp.masterPage {
   'use strict';
 
-  interface IBlock {
-    hash: String;
-  }
+  import IBlock = Classes.IBlock;
 
   interface IMasterPageScope {
     retryError: string;

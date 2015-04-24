@@ -5,3 +5,11 @@ bower_components/
 tmp
 .DS_Store
 .idea
+services.js
+services.js.map
+masterPage.js
+masterPage.js.map
+classes.js.map
+classes.js
+script.js
+script.js.map
