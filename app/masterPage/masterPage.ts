@@ -1,4 +1,5 @@
 /// <reference path="../definitionFiles/angular/angular.d.ts" />
+/// <reference path="../definitionFiles/es6-promise/es6-promise.d.ts" />
 
 
 'use strict';
@@ -9,99 +10,97 @@ module myApp.masterPage {
   'use strict';
 
   interface IMasterPageScope {
-
+    retryError: string;
+    oldestBlock: string;
+    errorMessage: string;
+    previousTenFromLatest: () => void;
+    previousTenBlocks: (string) => void;
+    previousTen: () => void;
+    convertHexToDecimal: (string) => Number;
+    rawBlocks: any;
   }
 
   class MasterPageController implements IMasterPageScope {
-    constructor() {}
-  }
-}
+    retryError: string;
+    oldestBlock: string;
+    errorMessage: string;
+    rawBlocks: any;
 
+    static $inject = ['$scope', 'BlockService'];
+    constructor(private $scope, private BlockService: any) {
+      this.retryError = 'Error! Could not load blocks.';
+      this.oldestBlock = '';
+      this.errorMessage = '';
 
-(function() {
-  var masterPage = angular.module('myApp.masterPage', ['ngRoute', 'blockExplorerServices']);
+      this.previousTenFromLatest();
+    }
 
-  masterPage.config(['$routeProvider', function($routeProvider) {
-    $routeProvider.when('/', {
-      templateUrl: 'masterPage/masterPage.html',
-      controller: 'MasterPageCtrl'
-    });
-  }]);
-
-  masterPage.controller('MasterPageCtrl', ['$http', '$scope', 'BlockService', function($http, $scope, BlockService) {
-    var self = this;
-
-    var retryError = 'Error! Could not load blocks.';
-
-    self.oldestBlock = '';
-    self.errorMessage = '';
-
-
-
-    this.previousTenFromLatest = function () {
-      BlockService.getLatestHash().then(
-        function(latestHash) {
-          self.errorMessage = '';
-
-          self.previousTenBlocks(latestHash);
-        },
-        function(error) {
-          self.previousTenBlocks('000000008d9dc510f23c2657fc4f67bea30078cc05a90eb89e84cc475c080805');
-        });
-    };
-
-    this.previousTenBlocks = function (hash) {
-      BlockService.getBlocks(hash, 10).then(
-        function(blocksArray) {
-          self.errorMessage = '';
-
-          self.rawBlocks = blocksArray;
-
-          self.oldestBlock = self.rawBlocks[self.rawBlocks.length-1].hash;
-        },
-        function(error) {
-          self.errorMessage = retryError;
-          $scope.$apply();
-          self.previousTenBlocks('000000008d9dc510f23c2657fc4f67bea30078cc05a90eb89e84cc475c080805');
-        });
-
-    };
-
-    this.previousTen = function () {
-      self.previousTenBlocks(self.oldestBlock);
-    };
-
-    this.convertHexToDecimal = function(hex) {
-      return parseInt(hex, 16);
-    };
-
-    this.previousTenFromLatest();
-  }]);
-
-  masterPage.filter('blockHashFilter', function() {
-    return function(input, filterText) {
-      // return false;
-      if (!input || !filterText) {
-        return input;
-      }
-
-      var newArray = input.filter(function(element, index, array) {
-        var result = (element.hash.indexOf(filterText) > -1);
-        return result;
+    previousTenFromLatest(): void {
+      this.BlockService.getLatestHash().then((latestHash: string) => {
+        this.errorMessage = '';
+        this.previousTenBlocks(latestHash);
+      },
+      () => {
+        this.previousTenBlocks('000000008d9dc510f23c2657fc4f67bea30078cc05a90eb89e84cc475c080805');
       });
+    }
 
-      return newArray;
-    };
-  });
+    previousTenBlocks(hash: string): void {
+      this.BlockService.getBlocks(hash, 10).then((blocksArray: any) => {
+            this.errorMessage = '';
 
-  masterPage.directive('blockCard', function() {
-    return {
-      restrict: 'E',
-      template: '<a href="#/block/{{rawBlock.hash}}"><div><div class="arrow-right"></div><h1>{{ rawBlock.hash | removeLeadingZeros }}</h1><p># Transactions: {{ rawBlock.tx.length }}</p></div></a>',
-      scope: {
-        rawBlock: "=rawBlock",
-      }
-    };
-  });
+            this.rawBlocks = blocksArray;
 
-})();
+            this.oldestBlock = this.rawBlocks[this.rawBlocks.length-1].hash;
+          },
+          () => {
+            this.errorMessage = this.retryError;
+            this.$scope.$apply();
+            this.previousTenBlocks('000000008d9dc510f23c2657fc4f67bea30078cc05a90eb89e84cc475c080805');
+          });
+    }
+
+    previousTen(): void {
+      this.previousTenBlocks(this.oldestBlock);
+
+    }
+
+    convertHexToDecimal(hex: string): Number {
+      return parseInt(hex, 16);
+    }
+  }
+
+  angular
+    .module('myApp.masterPage', ['ngRoute', 'blockExplorerServices'])
+    .config(['$routeProvider', function($routeProvider) {
+      $routeProvider.when('/', {
+        templateUrl: 'masterPage/masterPage.html',
+        controller: 'MasterPageController'
+      });
+    }])
+    .controller('MasterPageController', MasterPageController)
+    .filter('blockHashFilter', function() {
+      return function(input, filterText) {
+        // return false;
+        if (!input || !filterText) {
+          return input;
+        }
+
+        var newArray = input.filter(function(element, index, array) {
+          var result = (element.hash.indexOf(filterText) > -1);
+          return result;
+        });
+
+        return newArray;
+      };
+    })
+    .directive('blockCard', function() {
+      return {
+        restrict: 'E',
+        template: '<a href="#/block/{{rawBlock.hash}}"><div><div class="arrow-right"></div><h1>{{ rawBlock.hash | removeLeadingZeros }}</h1><p># Transactions: {{ rawBlock.tx.length }}</p></div></a>',
+        scope: {
+          rawBlock: "=rawBlock",
+        }
+      };
+    });;
+}
