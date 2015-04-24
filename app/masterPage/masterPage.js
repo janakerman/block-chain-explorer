@@ -46,23 +46,23 @@ var myApp;
             MasterPageController.$inject = ['$scope', 'BlockService'];
             return MasterPageController;
         })();
+        var textFilter = function (input, filterText) {
+            if (!input || !filterText) {
+                return input;
+            }
+            var newArray = input.filter(function (element, index, array) {
+                var result = (element.hash.indexOf(filterText) > -1);
+                return result;
+            });
+            return newArray;
+        };
         angular.module('myApp.masterPage', ['ngRoute', 'blockExplorerServices']).config(['$routeProvider', function ($routeProvider) {
             $routeProvider.when('/', {
                 templateUrl: 'masterPage/masterPage.html',
                 controller: 'MasterPageController'
             });
         }]).controller('MasterPageController', MasterPageController).filter('blockHashFilter', function () {
-            return function (input, filterText) {
-                // return false;
-                if (!input || !filterText) {
-                    return input;
-                }
-                var newArray = input.filter(function (element, index, array) {
-                    var result = (element.hash.indexOf(filterText) > -1);
-                    return result;
-                });
-                return newArray;
-            };
+            return textFilter;
         }).directive('blockCard', function () {
             return {
                 restrict: 'E',

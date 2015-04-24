@@ -9,6 +9,10 @@ var test = 0;
 module myApp.masterPage {
   'use strict';
 
+  interface IBlock {
+    hash: String;
+  }
+
   interface IMasterPageScope {
     retryError: string;
     oldestBlock: string;
@@ -70,6 +74,23 @@ module myApp.masterPage {
     }
   }
 
+  interface ITextFilter {
+    (input: Array<IBlock>, filterText: string): Array<IBlock>
+  }
+
+  var textFilter: ITextFilter = function (input: Array<IBlock>, filterText: string) {
+    if (!input || !filterText) {
+      return input;
+    }
+
+    var newArray = input.filter(function(element, index, array) {
+      var result = (element.hash.indexOf(filterText) > -1);
+      return result;
+    });
+
+    return newArray;
+  }
+
   angular
     .module('myApp.masterPage', ['ngRoute', 'blockExplorerServices'])
     .config(['$routeProvider',
@@ -81,20 +102,8 @@ module myApp.masterPage {
       }])
     .controller('MasterPageController', MasterPageController)
     .filter('blockHashFilter', function() {
-      return function(input, filterText) {
-        // return false;
-        if (!input || !filterText) {
-          return input;
-        }
-
-        var newArray = input.filter(function(element, index, array) {
-          var result = (element.hash.indexOf(filterText) > -1);
-          return result;
-        });
-
-        return newArray;
-      };
-    })
+        return textFilter
+      })
     .directive('blockCard', function() {
       return {
         restrict: 'E',
