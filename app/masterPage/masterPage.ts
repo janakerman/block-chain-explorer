@@ -72,12 +72,13 @@ module myApp.masterPage {
 
   angular
     .module('myApp.masterPage', ['ngRoute', 'blockExplorerServices'])
-    .config(['$routeProvider', function($routeProvider) {
-      $routeProvider.when('/', {
-        templateUrl: 'masterPage/masterPage.html',
-        controller: 'MasterPageController'
-      });
-    }])
+    .config(['$routeProvider',
+      ($routeProvider) => {
+        $routeProvider.when('/', {
+          templateUrl: 'masterPage/masterPage.html',
+          controller: 'MasterPageController'
+        });
+      }])
     .controller('MasterPageController', MasterPageController)
     .filter('blockHashFilter', function() {
       return function(input, filterText) {
