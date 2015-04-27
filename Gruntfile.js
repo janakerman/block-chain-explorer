@@ -8,7 +8,8 @@ module.exports = function(grunt) {
 		paths: {
 			jsSrc: [
 		        'app/app.js',
-		        'app/masterPage/masterPage.js',
+				'app/masterPage/MasterPageController.js',
+				'app/masterPage/masterPage.js',
 		        'app/services/services.js',
 		        'app/blockDetail/blockDetail.js',
 		        'app/d3/d3.js',
