@@ -15,3 +15,5 @@ script.js
 script.js.map
 MasterPageController.js.map
 MasterPageController.js
+app/masterPage/TextFilter.js
+app/masterPage/TextFilter.js.map

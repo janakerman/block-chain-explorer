@@ -2,6 +2,7 @@
 /// <reference path="../definitionFiles/es6-promise/es6-promise.d.ts" />
 /// <reference path="../services/classes.ts" />
 /// <reference path="MasterPageController.ts" />
+/// <reference path="TextFilter.ts" />
 
 'use strict';
 
@@ -12,23 +13,6 @@ module myApp.masterPage {
 
   import IBlock = Classes.IBlock;
   import MasterPageController = myApp.masterPage.MasterPageController;
-
-  interface ITextFilter {
-    (input: Array<IBlock>, filterText: string): Array<IBlock>
-  }
-
-  var textFilter: ITextFilter = function (input: Array<IBlock>, filterText: string) {
-    if (!input || !filterText) {
-      return input;
-    }
-
-    var newArray = input.filter(function(element, index, array) {
-      var result = (element.hash.indexOf(filterText) > -1);
-      return result;
-    });
-
-    return newArray;
-  }
 
   angular
     .module('myApp.masterPage', ['ngRoute', 'blockExplorerServices', 'myApp.masterPage.MasterPageController'])
@@ -42,9 +26,7 @@ module myApp.masterPage {
     .controller('MasterPageController', function() {
         return MasterPageController;
       }())
-    .filter('blockHashFilter', function() {
-        return textFilter
-      })
+    .filter('blockHashFilter', TextFilter.Factory)
     .directive('blockCard', function() {
       return {
         restrict: 'E',

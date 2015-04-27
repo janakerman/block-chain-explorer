@@ -9,6 +9,7 @@ module.exports = function(grunt) {
 			jsSrc: [
 		        'app/app.js',
 				'app/masterPage/MasterPageController.js',
+				'app/masterPage/TextFilter.js',
 				'app/masterPage/masterPage.js',
 		        'app/services/services.js',
 		        'app/blockDetail/blockDetail.js',
